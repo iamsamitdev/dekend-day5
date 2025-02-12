@@ -8,6 +8,12 @@ class User(AbstractUser):
         db_table = 'auth_user'
 
 class Intern(models.Model):
+    user = models.OneToOneField(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='intern_profile',
+        # null=True
+    )
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     gender = models.CharField(max_length=10)
@@ -27,6 +33,10 @@ class Intern(models.Model):
     profile_picture = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    subdistrict = models.CharField(max_length=50, blank=True)
+    position_type = models.CharField(max_length=20, blank=True)
+    position_interest = models.CharField(max_length=255, blank=True)
+    preferred_provinces = models.CharField(max_length=255, blank=True)
 
     class Meta:
         db_table = 'interns'

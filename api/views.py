@@ -15,7 +15,10 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 class InternViewSet(viewsets.ModelViewSet):
     queryset = Intern.objects.all()
     serializer_class = InternSerializer
-    # permission_classes = (permissions.AllowAny,) # endpoint นี้จะไม่ต้องมีการ authenticate
+    permission_classes = [IsAuthenticated]  # ต้อง login ก่อนถึงจะใช้งานได้
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 class EducationViewSet(viewsets.ModelViewSet):
     queryset = Education.objects.all()

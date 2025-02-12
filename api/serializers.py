@@ -5,9 +5,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Intern, Education, Training, WorkExperience, User
 
 class InternSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(read_only=True, source='user.id')  # เพิ่มฟิลด์นี้ถ้าต้องการให้แสดง user_id ใน response
+
     class Meta:
         model = Intern
         fields = '__all__'
+        read_only_fields = ('user',)  # ป้องกันการแก้ไข user field โดยตรง
 
 class EducationSerializer(serializers.ModelSerializer):
     class Meta:
