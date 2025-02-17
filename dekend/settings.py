@@ -74,6 +74,7 @@ SIMPLE_JWT = {
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',  # เพิ่ม CorsMiddleware ที่ตำแหน่งบนสุด
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -198,7 +199,9 @@ STATIC_URL = 'static/'
 # STATICFILES_DIRS = [Path.joinpath(BASE_DIR, 'static')]
 
 # For prod mode
-STATIC_ROOT = Path.joinpath(BASE_DIR, 'static')
+if not DEBUG:
+    STATIC_ROOT = Path.joinpath(BASE_DIR, 'staticfiles')
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
