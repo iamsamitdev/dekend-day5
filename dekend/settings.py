@@ -60,8 +60,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60), # ระยะเวลาของ Access Token คือ 1 ชั่วโมง
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1), # ระยะเวลาของ Refresh Token คือ 1 วัน
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1), # ระยะเวลาของ Access Token คือ 1 วัน
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7), # ระยะเวลาของ Refresh Token คือ 7 วัน
     'ROTATE_REFRESH_TOKENS': True, # หมุนเวลา Refresh Token
     'BLACKLIST_AFTER_ROTATION': True,  # เปิดใช้งานการตรวจสอบ blacklist
     'ALGORITHM': 'HS256', # อัลกอริธึมสำหรับการเข้ารหัส

@@ -12,7 +12,7 @@ class Intern(models.Model):
         User, 
         on_delete=models.CASCADE, 
         related_name='intern_profile',
-        # null=True
+        null=True
     )
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -42,7 +42,12 @@ class Intern(models.Model):
         db_table = 'interns'
 
 class Education(models.Model):
-    user = models.ForeignKey(Intern, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='education_profile',
+        null=True
+    )
     level = models.CharField(max_length=50)
     institution_name = models.CharField(max_length=100)
     faculty = models.CharField(max_length=100, blank=True)
@@ -56,7 +61,12 @@ class Education(models.Model):
         db_table = 'education'
 
 class Training(models.Model):
-    user = models.ForeignKey(Intern, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='training_profile',
+        null=True
+    )
     topic = models.CharField(max_length=100)
     details = models.TextField(blank=True)
     trainer = models.CharField(max_length=100, blank=True)
@@ -68,7 +78,12 @@ class Training(models.Model):
         db_table = 'trainings'
 
 class WorkExperience(models.Model):
-    user = models.ForeignKey(Intern, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='work_experience_profile',
+        null=True
+    )
     position = models.CharField(max_length=100)
     company_name = models.CharField(max_length=100)
     job_description = models.TextField(blank=True)

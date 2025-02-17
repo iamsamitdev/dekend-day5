@@ -3,7 +3,10 @@ from rest_framework import viewsets, generics, permissions
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Intern, Education, Training, WorkExperience, User
-from .serializers import InternSerializer, EducationSerializer, TrainingSerializer, WorkExperienceSerializer, RegisterSerializer, UserSerializer
+from .serializers import (
+    InternSerializer, EducationSerializer, TrainingSerializer, 
+    WorkExperienceSerializer, RegisterSerializer, UserSerializer
+)
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -15,7 +18,11 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 class InternViewSet(viewsets.ModelViewSet):
     queryset = Intern.objects.all()
     serializer_class = InternSerializer
-    permission_classes = [IsAuthenticated]  # ต้อง login ก่อนถึงจะใช้งานได้
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # กรองข้อมูลตาม user ที่ login
+        return Intern.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -23,23 +30,43 @@ class InternViewSet(viewsets.ModelViewSet):
 class EducationViewSet(viewsets.ModelViewSet):
     queryset = Education.objects.all()
     serializer_class = EducationSerializer
-    # permission_classes = (permissions.IsAuthenticated) # endpoint นี้จะต้องมีการ authenticate
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Education.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 class TrainingViewSet(viewsets.ModelViewSet):
     queryset = Training.objects.all()
     serializer_class = TrainingSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Training.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 class WorkExperienceViewSet(viewsets.ModelViewSet):
     queryset = WorkExperience.objects.all()
     serializer_class = WorkExperienceSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return WorkExperience.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
 
 class LogoutView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     
     @swagger_auto_schema(
         request_body=openapi.Schema(
@@ -65,27 +92,33 @@ class LogoutView(APIView):
             token.blacklist()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
-            print(f"Logout error: {str(e)}")
             return Response(
                 {"error": str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
 class LoginView(TokenObtainPairView):
+    @swagger_auto_schema(
+        responses={
+            200: openapi.Response(
+                description="Login successful",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'access': openapi.Schema(type=openapi.TYPE_STRING),
+                        'refresh': openapi.Schema(type=openapi.TYPE_STRING),
+                        'user': openapi.Schema(type=openapi.TYPE_OBJECT)
+                    }
+                )
+            )
+        }
+    )
     def post(self, request, *args, **kwargs):
-        # เรียกใช้ method post ของ parent class เพื่อสร้าง token
         response = super().post(request, *args, **kwargs)
-        
-        # ดึงข้อมูล token จาก response
         token = response.data
-        
-        # ดึงข้อมูล user จาก username ที่ส่งมา
         user = User.objects.get(username=request.data['username'])
-        
-        # Serialize ข้อมูล user
         user_serializer = UserSerializer(user)
         
-        # สร้าง response ใหม่ที่รวมข้อมูล token และ user
         response.data = {
             'access': token['access'],
             'refresh': token['refresh'],

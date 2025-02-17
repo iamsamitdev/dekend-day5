@@ -6,26 +6,31 @@ from .models import Intern, Education, Training, WorkExperience, User
 
 class InternSerializer(serializers.ModelSerializer):
     user_id = serializers.IntegerField(read_only=True, source='user.id')  # เพิ่มฟิลด์นี้ถ้าต้องการให้แสดง user_id ใน response
-
     class Meta:
         model = Intern
         fields = '__all__'
         read_only_fields = ('user',)  # ป้องกันการแก้ไข user field โดยตรง
 
 class EducationSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(read_only=True, source='user.id')
     class Meta:
         model = Education
         fields = '__all__'
+        read_only_fields = ('user',)
 
 class TrainingSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(read_only=True, source='user.id')
     class Meta:
         model = Training
         fields = '__all__'
+        read_only_fields = ('user',)
 
 class WorkExperienceSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(read_only=True, source='user.id')
     class Meta:
         model = WorkExperience
         fields = '__all__'
+        read_only_fields = ('user',)
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -51,7 +56,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 class LogoutSerializer(serializers.Serializer):
-    refresh = serializers.CharField()  # รับค่า refresh token
+    refresh = serializers.CharField()
 
 class LogoutView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
